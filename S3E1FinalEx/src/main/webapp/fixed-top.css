@@ -1,0 +1,17 @@
+.fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* 确保 header 在其他元素之上 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 可选：添加阴影以区分页面内容 */
+    background-color: white; /* 可根据需要调整背景色，或者使用背景渐变 */
+}
+
+/* 可选：增加对不同屏幕的支持 */
+@media (max-width: 768px) {
+    .fixed-top {
+        height: auto;
+        padding: 10px 15px; /* 调整小屏幕的内边距 */
+    }
+}
