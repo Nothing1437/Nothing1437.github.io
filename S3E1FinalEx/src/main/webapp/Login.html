@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        form { display: inline-block; margin-top: 50px; }
+        label, input { display: block; margin: 10px auto; }
+        input { padding: 8px; width: 200px; }
+        button { padding: 10px 20px; background: #157799; color: white; border: none; cursor: pointer; }
+        button:hover { background: #135d87; }
+    </style>
+</head>
+<body>
+    <h1>用户登录</h1>
+    <form action="NewsServlet.action?action=login" method="post">
+    <label for="userid">用户ID</label>
+    <input type="text" id="userid" name="userid" required>
+    
+    <label for="userpwd">密码</label>
+    <input type="password" id="userpwd" name="userpwd" required>
+    
+    <button type="submit">登录</button>
+</form>
+
+</body>
+</html>

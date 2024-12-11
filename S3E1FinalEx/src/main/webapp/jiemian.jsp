@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="dao.ArticleDao" %>
+<%@ page import="dao.Article" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,7 +10,6 @@
     <title>学院官网</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="fixed-top.css">
-    <link rel="stylesheet" href="script.js">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <!-- 引入Slick轮播CSS文件 -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
@@ -38,33 +40,126 @@
             }
         }
     </style>
+        <style>
+        header {
+            display: flex;
+            justify-content: space-between; /* 保持两侧对齐 */
+            align-items: center; /* 垂直居中 */
+        }
+
+        nav {
+            display: flex;
+            justify-content: center; /* 水平居中 */
+        }
+    </style>
+    
+    <style>
+        #user-menu {
+            display: none;
+            position: absolute;
+            top: 70px; /* 距离欢迎消息下方 */
+            right: 10px;   /* 左对齐，如果需要右对齐可以调整 */
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            list-style: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
     
 </head>
 <body>
-
+<% ArticleDao dao=new ArticleDao(); 
+%>
 <!-- 顶部导航栏 -->
- <!-- ======= Header ======= -->
-<header id="header" class="header d-flex align-items-center fixed-top" style="background:linear-gradient(to left, rgb(21, 153, 87), rgb(21, 87, 153));height:100px">
-        <div class="container-fluid container-xl d-flex align-items-center justify-content-between" frag="面板101">
-            <a href="https://jsjxy.shiep.edu.cn/" class="logo d-flex align-items-center">
-                <img src="/S3E1FinalEx/upload/article/images/index/logonew_1.png" style="width:6%; height:auto;" ><img  src="/S3E1FinalEx/upload/article/images/index/logonew_2.png"style="width:15%; height:auto;">
-            </a>
-    <nav>
-        <ul>
-            <li><a href="#">首页</a></li>
-            <li><a href="#">学院新闻</a></li>
-            <li><a href="#">教务通知</a></li>
-            <li><a href="#">通知公告</a></li>
-            <li><a href="#">研究生教学</a></li>
-            <li><a href="#">学术讲座</a></li>
-            <li><a href="#">学生工作</a></li>
-            <li><a href="#">招聘信息</a></li>
-            
-            
-        </ul>
-    </nav>
+<header id="header" class="header d-flex align-items-center fixed-top" style="background:linear-gradient(to left, rgb(21, 153, 87), rgb(21, 87, 153)); height:100px; width:100%; display: flex; justify-content: space-between; align-items: center;">
+    <div class="container-fluid container-xl d-flex align-items-center" style="width:100%; display: flex; justify-content: space-between; align-items: center;">
+
+        <!-- Logo 部分 -->
+        <a href="/S3E1FinalEx/jiemian.jsp" class="logo d-flex align-items-center" style="flex-shrink: 0; display: inline-block;">
+            <img src="/S3E1FinalEx/upload/article/images/index/logonew_1.png" style="width:100px; height:auto;">
+            <img src="/S3E1FinalEx/upload/article/images/index/logonew_2.png" style="width:150px; height:auto;">
+        </a>
+
+        <!-- 导航栏部分 -->
+        <nav class="d-flex align-items-center" style="display: flex; justify-content: center; align-items: center; width: auto; margin: 0 auto;">
+            <ul style="display: flex; margin-bottom: 0; list-style: none; padding: 0;">
+                <li><a href="/S3E1FinalEx/jiemian.jsp">首页</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=学院新闻">学院新闻</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=教务通知">教务通知</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=通知公告">通知公告</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=研究生教学">研究生教学</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=学术讲座">学术讲座</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=学生工作">学生工作</a></li>
+                <li><a href="/S3E1FinalEx/NewsList.jsp?type=招聘信息">招聘信息</a></li>
+            </ul>
+        </nav>
+
+        <!-- 登录按钮部分 -->
+        <div style="margin-left: auto; display: flex; align-items: center;">
+            <% 
+                String username = (String) session.getAttribute("username");
+                String userType = (String) session.getAttribute("UserType");
+            %>
+            <% if (username != null) { %>
+                <!-- 显示欢迎信息并使其可点击 -->
+                <span id="welcome-msg" style="color:white; font-size:16px; cursor:pointer;" onclick="toggleMenu()">
+                    欢迎您，<%= username %>
+                </span>
+
+                <!-- 动态生成用户功能菜单 -->
+                <ul id="user-menu" style="display:none; position:absolute; right:10px; background-color:white; border:1px solid #ccc; padding:10px; list-style:none; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <%
+                        // 公共功能项，所有用户都能看到的功能
+                        out.println("<li><a href='/S3E1FinalEx/jiemian.jsp'>首页</a></li>");
+                        String[] commonItems = { "学院新闻", "教务通知", "通知公告", "研究生教学", "学术讲座", "学生工作", "招聘信息"};
+                        for (String item : commonItems) {
+                            out.println("<li><a href='/S3E1FinalEx/NewsList.jsp?type=" + item + "'>" + item + "</a></li>");
+                        }
+
+                        // 根据用户类型添加不同的菜单项
+                        if (userType != null) {
+                            if (userType.equals("教师")) {
+                                out.println("<li><a href='/S3E1FinalEx/newsEditor.jsp'>上传文章</a></li>");
+                            } else if (userType.equals("管理员")) {
+                                out.println("<li><a href='/S3E1FinalEx/newsEditor.jsp'>上传文章</a></li>");
+                                out.println("<li><a href='/S3E1FinalEx/ArticleManagement.jsp'>文章管理</a></li>");
+                                out.println("<li><a href='/S3E1FinalEx/UserManagement.jsp'>用户管理</a></li>");
+                            }
+                        }
+                    %>
+                </ul>
+            <% } else { %>
+                <a id="login-btn" href="Login.html" style="color:white; font-size:16px;">登录</a>
+            <% } %>
+        </div>
     </div>
 </header>
+
+<!-- JavaScript部分 -->
+<script>
+    function toggleMenu() {
+        var menu = document.getElementById('user-menu');
+        // 切换菜单显示和隐藏
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+        } else {
+            menu.style.display = 'none';
+        }
+    }
+
+    // 点击页面其他区域时关闭菜单
+    window.onclick = function(event) {
+        var menu = document.getElementById('user-menu');
+        var welcomeMsg = document.getElementById('welcome-msg');
+        // 如果点击的不是菜单或者用户名，则关闭菜单
+        if (!menu.contains(event.target) && event.target !== welcomeMsg) {
+            menu.style.display = 'none';
+        }
+    }
+</script>
+
+
 
 <!-- 首页轮播图 -->
 <section id="hero-slider" class="hero-slider">
@@ -300,6 +395,33 @@
 .card-title a:hover {
     text-decoration: underline; /* 鼠标悬停时显示下划线 */
 }
+
+/* 列表项样式 */
+.news-item {
+    display: flex;
+    justify-content: space-between; /* 两端对齐 */
+    align-items: center; /* 垂直居中 */
+    padding: 5px 0; /* 增加上下间距 */
+    border-bottom: 1px solid #ddd; /* 可选：分隔线 */
+}
+
+/* 标题样式 */
+.news-title {
+    flex-grow: 1; /* 标题占据可用空间 */
+    text-overflow: ellipsis; /* 处理超出部分 */
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* 日期样式 */
+.news-date {
+    flex-shrink: 0; /* 日期不压缩 */
+    margin-left: 10px; /* 与标题保持间距 */
+    color: gray; /* 可选：淡化颜色 */
+    font-size: 0.9em; /* 可选：调整字号 */
+}
+
+
 </style>
 
 
@@ -310,18 +432,32 @@
 <div class="section-news">
     <div class="section-header">
         <h2 data-type="学院新闻">学院新闻</h2>
-        <a href="/S3E1FinalEx/NewsList.jsp" class="news-button" onclick="redirectToNewsList(this)">
+        <a href="/S3E1FinalEx/NewsList.jsp?type=学院新闻" class="news-button">
             <i class="bi bi-list" style="font-size:24px; color:green;"></i>
         </a>
     </div>
-    <ul>
-        <li><a href="/S3E1FinalEx/TestNews.jsp">新闻标题1</a></li>
-        <li><a href="/S3E1FinalEx/TestNews.jsp">新闻标题2</a></li>
-        <li><a href="#">新闻标题3</a></li>
-        <li><a href="#">新闻标题4</a></li>
-    </ul>
-</div>
+<ul>
+    <% 
+        String newstype1 = "学院新闻";
+        List<Article> clist1 = dao.getArticlesByType(newstype1);  // 修改为 List<Article>
+        // 遍历数据库返回的新闻列表，动态生成 HTML
+        for (Article news : clist1) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 14) {
+                title = title.substring(0, 14) + "...";
+            }
+    %>
+        <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+        </li>
+    <% 
+        } 
+    %>
+</ul>
 
+</div>
 
     
     
@@ -361,69 +497,170 @@
 </div>
 
                             
-                        </div>
+ </div>
     </div>
 
     <!-- 其他六个板块，二分之一宽度，每行两个板块 -->
     <div class="section">
-        <h2>教务通知</h2>
-        <ul>
-            <li><a href="#">通知标题1</a></li>
-            <li><a href="#">通知标题2</a></li>
-            <li><a href="#">通知标题3</a></li>
-            <li><a href="#">通知标题4</a></li>
-            <li><a href="#">通知标题5</a></li>
-        </ul>
+        <h2 data-type="教务通知">教务通知<a href="/S3E1FinalEx/NewsList.jsp?type=教务通知" class="news-button">
+            <i class="bi bi-list" style="font-size:24px; color:green;"></i>
+        </a></h2>
+    <ul>
+        <% 
+            String newstype2 = "教务通知";
+            List<Article> clist2 = dao.getArticlesByType(newstype2);  // 修改为 List<Article>
+            // 遍历数据库返回的新闻列表，动态生成 HTML
+            for (Article news : clist2) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 25) {
+                title = title.substring(0, 25) + "...";
+            }
+        %>
+             <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+            </li>
+
+        <% 
+            } 
+        %>
+    </ul>
     </div>
+    
     <div class="section">
-        <h2>通知公告</h2>
-        <ul>
-            <li><a href="#">公告标题1</a></li>
-            <li><a href="#">公告标题2</a></li>
-            <li><a href="#">公告标题3</a></li>
-            <li><a href="#">公告标题4</a></li>
-            <li><a href="#">公告标题5</a></li>
-        </ul>
+        <h2 data-type="通知公告">通知公告<a href="/S3E1FinalEx/NewsList.jsp?type=通知公告" class="news-button">
+            <i class="bi bi-list" style="font-size:24px; color:green;"></i>
+        </a></h2>
+    <ul>
+        <% 
+            String newstype3 = "通知公告";
+            List<Article> clist3 = dao.getArticlesByType(newstype3);  // 修改为 List<Article>
+            // 遍历数据库返回的新闻列表，动态生成 HTML
+            for (Article news : clist3) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 25) {
+                title = title.substring(0, 25) + "...";
+            }
+        %>
+             <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+            </li>
+
+        <% 
+            } 
+        %>
+    </ul>
     </div>
+    
     <div class="section">
-        <h2>研究生教学</h2>
-        <ul>
-            <li><a href="#">教学动态1</a></li>
-            <li><a href="#">教学动态2</a></li>
-            <li><a href="#">教学动态3</a></li>
-            <li><a href="#">教学动态4</a></li>
-            <li><a href="#">教学动态5</a></li>
-        </ul>
+        <h2 data-type="研究生教学">研究生教学<a href="/S3E1FinalEx/NewsList.jsp?type=研究生教学" class="news-button">
+            <i class="bi bi-list" style="font-size:24px; color:green;"></i>
+        </a></h2>
+    <ul>
+        <% 
+            String newstype4 = "研究生教学";
+            List<Article> clist4 = dao.getArticlesByType(newstype4);  // 修改为 List<Article>
+            // 遍历数据库返回的新闻列表，动态生成 HTML
+            for (Article news : clist4) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 25) {
+                title = title.substring(0, 25) + "...";
+            }
+        %>
+             <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+            </li>
+
+        <% 
+            } 
+        %>
+    </ul>
     </div>
+    
     <div class="section">
-        <h2>学术讲座</h2>
-        <ul>
-            <li><a href="#">讲座安排1</a></li>
-            <li><a href="#">讲座安排2</a></li>
-            <li><a href="#">讲座安排3</a></li>
-            <li><a href="#">讲座安排4</a></li>
-            <li><a href="#">讲座安排5</a></li>
-        </ul>
+        <h2 data-type="学术讲座">学术讲座<a href="/S3E1FinalEx/NewsList.jsp?type=学术讲座" class="news-button">
+            <i class="bi bi-list" style="font-size:24px; color:green;"></i>
+        </a></h2>
+<ul>
+        <% 
+            String newstype5 = "学术讲座";
+            List<Article> clist5 = dao.getArticlesByType(newstype5);  // 修改为 List<Article>
+            // 遍历数据库返回的新闻列表，动态生成 HTML
+            for (Article news : clist5) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 25) {
+                title = title.substring(0, 25) + "...";
+            }
+        %>
+             <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+            </li>
+
+        <% 
+            } 
+        %>
+    </ul>
     </div>
+    
     <div class="section">
-        <h2>学生工作</h2>
-        <ul>
-            <li><a href="#">活动安排1</a></li>
-            <li><a href="#">活动安排2</a></li>
-            <li><a href="#">活动安排3</a></li>
-            <li><a href="#">活动安排4</a></li>
-            <li><a href="#">活动安排5</a></li>
-        </ul>
+        <h2 data-type="学生工作">学生工作<a href="/S3E1FinalEx/NewsList.jsp?type=学生工作" class="news-button">
+            <i class="bi bi-list" style="font-size:24px; color:green;"></i>
+        </a></h2>
+<ul>
+        <% 
+            String newstype6 = "学生工作";
+            List<Article> clist6 = dao.getArticlesByType(newstype6);  // 修改为 List<Article>
+            // 遍历数据库返回的新闻列表，动态生成 HTML
+            for (Article news : clist6) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 25) {
+                title = title.substring(0, 25) + "...";
+            }
+        %>
+             <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+            </li>
+
+        <% 
+            } 
+        %>
+    </ul>
     </div>
+    
     <div class="section">
-        <h2>招聘信息</h2>
-        <ul>
-            <li><a href="#">招聘信息1</a></li>
-            <li><a href="#">招聘信息2</a></li>
-            <li><a href="#">招聘信息3</a></li>
-            <li><a href="#">招聘信息4</a></li>
-            <li><a href="#">招聘信息5</a></li>
-        </ul>
+        <h2 data-type="招聘信息">招聘信息<a href="/S3E1FinalEx/NewsList.jsp?type=招聘信息" class="news-button">
+            <i class="bi bi-list" style="font-size:24px; color:green;"></i>
+        </a></h2>
+<ul>
+        <% 
+            String newstype7 = "招聘信息";
+            List<Article> clist7 = dao.getArticlesByType(newstype7);  // 修改为 List<Article>
+            // 遍历数据库返回的新闻列表，动态生成 HTML
+            for (Article news : clist7) {  // 遍历 Article 对象
+            String title = news.getTitle(); // 获取文章标题
+            // 如果标题长度超过14个字符，截取前14个字符并添加省略号
+            if (title.length() > 25) {
+                title = title.substring(0, 25) + "...";
+            }
+        %>
+             <li class="news-item">
+            <a href="/S3E1FinalEx/ArticleDetails.jsp?id=<%= news.getId() %>" class="news-title"><%= title %></a>
+            <span class="news-date"><%= news.getSubDate() %></span>
+            </li>
+
+        <% 
+            } 
+        %>
+    </ul>
     </div>
 </section>
 

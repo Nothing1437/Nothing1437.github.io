@@ -5,18 +5,25 @@
 <%@ page import="javax.servlet.http.*" %>
 
 <%
-    request.setCharacterEncoding("UTF-8"); // 设置请求编码为UTF-8
+    // 设置请求和响应的编码为 UTF-8
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+    response.setContentType("text/html; charset=UTF-8");
+
     String title = request.getParameter("title");
     String content = request.getParameter("newstxt");
     String type = request.getParameter("type");
+    String subName = request.getParameter("subName");
 
     ArticleDao articleDao = new ArticleDao();
-    boolean isInserted = articleDao.insertArticle(title, content, type);
+    boolean isInserted = articleDao.insertArticle(title, content, type, subName);
 
     if (isInserted) {
-        out.println("<script>alert('文章提交成功!'); window.location='newsEditor.jsp';</script>");
+        out.println("<script>alert('文章上传成功！');window.location.href='jiemian.jsp';</script>");
     } else {
-        out.println("<script>alert('文章提交失败!'); window.location='newsEditor.jsp';</script>");
+        out.println("<script>alert('文章上传失败，请重试！');history.back();</script>");
     }
 %>
+
+
 

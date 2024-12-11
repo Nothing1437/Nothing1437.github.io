@@ -4,6 +4,19 @@ body {
     padding: 0;
 }
 
+
+
+        header {
+            display: flex;
+            justify-content: space-between; /* 保持两侧对齐 */
+            align-items: center; /* 垂直居中 */
+        }
+
+        nav {
+            display: flex;
+            justify-content: center; /* 水平居中 */
+        }
+
 header {
     background-color: #333;
     padding: 10px 0;
@@ -151,4 +164,15 @@ footer {
     padding: 10px 0;
 }
 
-    
+#user-menu {
+    display: none;
+    position: absolute;
+    top: 100%;  /* 距离欢迎消息下方 */
+    left: 0;    /* 左对齐，如果需要右对齐可以调整 */
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    list-style: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+   
