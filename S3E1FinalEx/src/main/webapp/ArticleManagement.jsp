@@ -60,6 +60,10 @@
         .article-list th {
             background-color: #f2f2f2;
         }
+        
+        .article-list th:nth-child(1) {
+            width: 750px;
+        }
     </style>
 
 </head>
@@ -114,7 +118,11 @@
                             <a href="updateArticle.jsp?articleId=<%= article.getId() %>">
                                    <button>更新</button>
                             </a>
-                                <button>删除</button>
+    <!-- 删除按钮，点击时提交删除请求 -->
+    <form action="loadArticles" method="POST" style="display:inline;">
+        <input type="hidden" name="deleteArticleId" value="<%= article.getId() %>">
+        <button type="submit">删除</button>
+    </form>
                             </td>
                         </tr>
                         <% 

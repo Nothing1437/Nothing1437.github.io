@@ -13,32 +13,6 @@ public class UserDao {
     private String dbPwd = "123456";
 
 
-    // 插入文章内容
-    public boolean insertUser(String title, String content, String type, String subName) {
-        boolean result = false;
-        try {
-            Class.forName(driver); // 加载数据库驱动
-            Connection conn = DriverManager.getConnection(url, dbUser, dbPwd); // 建立连接
-
-            String sql = "INSERT INTO Articles (Title, Content, SubDate, Type, SubName) VALUES (?, ?, GETDATE(), ?, ?)"; // 插入文章
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, title);
-            pstmt.setString(2, content);
-            pstmt.setString(3, type);
-            pstmt.setString(4, subName); // 传递当前用户名
-
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
-            }
-
-            pstmt.close();
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 
     public List<UserManager> getUsersByType(String type) {
         List<UserManager> user = new ArrayList<>();
@@ -67,20 +41,23 @@ public class UserDao {
         }
         return user;
     }
- // 删除指定ID的文章
-    public boolean deleteArticleById(int id) {
+    
+ // 更新用户信息
+    public boolean updateUser(String userId, String newPwd, String newName) {
         boolean result = false;
         try {
-            Class.forName(driver);
-            Connection conn = DriverManager.getConnection(url, dbUser, dbPwd);
+            Class.forName(driver); // 加载数据库驱动
+            Connection conn = DriverManager.getConnection(url, dbUser, dbPwd); // 建立连接
 
-            String sql = "DELETE FROM Articles WHERE ArticleID = ?";
+            String sql = "UPDATE Users SET UserPwd = ?, UserName = ? WHERE UserID = ?"; // 更新用户的密码和姓名
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setString(1, newPwd);
+            pstmt.setString(2, newName);
+            pstmt.setString(3, userId);
 
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
+            int rowsUpdated = pstmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                result = true; // 如果更新成功，返回true
             }
 
             pstmt.close();
@@ -91,24 +68,20 @@ public class UserDao {
         return result;
     }
 
-    // 更新文章
-    public boolean updateArticle(String title, String content,String subName,String Type,int id) {
+    // 删除用户
+    public boolean deleteUser(String userId) {
         boolean result = false;
         try {
-            Class.forName(driver);
-            Connection conn = DriverManager.getConnection(url, dbUser, dbPwd);
+            Class.forName(driver); // 加载数据库驱动
+            Connection conn = DriverManager.getConnection(url, dbUser, dbPwd); // 建立连接
 
-            String sql = "UPDATE Articles SET Title = ?, Content = ?, SubName = ?, Type = ? WHERE ArticleID = ?";
+            String sql = "DELETE FROM Users WHERE UserID = ?"; // 删除用户
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, title);
-            pstmt.setString(2, content);
-            pstmt.setString(3, subName);
-            pstmt.setString(4, Type);
-            pstmt.setInt(5, id);
+            pstmt.setString(1, userId);
 
-            int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                result = true;
+            int rowsDeleted = pstmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                result = true; // 如果删除成功，返回true
             }
 
             pstmt.close();
@@ -117,6 +90,34 @@ public class UserDao {
             e.printStackTrace();
         }
         return result;
-    } 
+    }
+    
+    public boolean addUser(String userId, String userPwd, String userName, String userType) {
+        boolean result = false;
+        try {
+            Class.forName(driver); // 加载数据库驱动
+            Connection conn = DriverManager.getConnection(url, dbUser, dbPwd); // 建立连接
+
+            String sql = "INSERT INTO Users (UserID, UserPwd, UserName, UserType) VALUES (?, ?, ?, ?)"; // 插入新用户
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, userPwd);
+            pstmt.setString(3, userName);
+            pstmt.setString(4, userType);
+
+            int rowsInserted = pstmt.executeUpdate();
+            if (rowsInserted > 0) {
+                result = true; // 如果插入成功，返回true
+            }
+
+            pstmt.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+ 
 
 }

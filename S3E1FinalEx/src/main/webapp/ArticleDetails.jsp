@@ -10,12 +10,14 @@
             display: none;
             position: absolute;
             top: 70px; /* 距离欢迎消息下方 */
-            right: 10px;   /* 左对齐，如果需要右对齐可以调整 */
+            left: 85%;  
+            right: 0;   
             background-color: white;
             border: 1px solid #ccc;
             padding: 10px;
             list-style: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 150px; /* 设置固定宽度为200px */
         }
         
         body {

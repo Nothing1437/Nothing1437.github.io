@@ -84,32 +84,86 @@
         </div>
 
         <div class="main-content">
-            <h2>用户管理</h2>
+            <h2>用户管理<button id="addUserButton">添加用户</button></h2>
+            
+            <!-- 添加用户的对话框 -->
+<div id="addUserDialog" style="display:none;">
+    <h3>添加新用户</h3>
+    <form id="addUserForm" action="loadUsers" method="post" accept-charset="UTF-8">
+        <input type="hidden" name="action" value="add">
+        <input type="hidden" name="userType" value="<%= request.getParameter("type") %>"> <!-- 当前用户类型 -->
+
+        <label for="userId">账号:</label>
+        <input type="text" id="userId" name="userId" required><br>
+
+        <label for="userPwd">密码:</label>
+        <input type="password" id="userPwd" name="userPwd" required><br>
+
+        <label for="userName">姓名:</label>
+        <input type="text" id="userName" name="userName" required><br>
+
+        <button type="submit">提交</button>
+        <button type="button" id="closeDialog">关闭</button>
+    </form>
+</div>
+
+<!-- 弹出对话框的脚本 -->
+<script>
+    document.getElementById("addUserButton").onclick = function() {
+        document.getElementById("addUserDialog").style.display = "block";
+    };
+
+    document.getElementById("closeDialog").onclick = function() {
+        document.getElementById("addUserDialog").style.display = "none";
+    };
+</script>
+            
             <div class="article-list">
                 <table id="article-table">
                     <thead>
                         <tr>
                             <th>账号</th>
-                            <th>密码</th>
-                            <th>姓名</th>
+                            <th>密码&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;姓名</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% 
-                            List<UserManager> users = (List<UserManager>) request.getAttribute("users");
-                            if (users != null) {
-                                for (UserManager user : users) {
-                        %>
-                        <tr>
-                            <td><%= user.getId() %></td>
-                            <td><%= user.getPwd() %></td>
-                            <td><%= user.getName() %></td>
-                        </tr>
-                        <% 
-                                }
-                            }
-                        %>
-                    </tbody>
+<%-- 表格显示用户列表 --%>
+<tbody>
+    <% 
+        List<UserManager> users = (List<UserManager>) request.getAttribute("users");
+        if (users != null) {
+            for (UserManager user : users) {
+    %>
+    <tr id="<%= user.getId() %>">
+        <!-- 用户ID（只读） -->
+        <td><input class="input-field" type="text" value="<%= user.getId() %>" readonly></td>
+      
+        <!-- 操作列：更新和删除按钮 -->
+        <td>
+            <!-- 更新操作 -->
+            <form action="loadUsers" method="post" style="display:inline;" accept-charset="UTF-8">
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="userId" value="<%= user.getId() %>">
+                <input type="text" name="newPwd" value="<%= user.getPwd() %>" placeholder="新密码">
+                <input type="text" name="newName" value="<%= user.getName() %>" placeholder="新姓名">
+                <input type="submit" value="更新">
+            </form>
+
+            
+            <!-- 删除操作 -->
+            <form action="loadUsers" method="post" style="display:inline;">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="userId" value="<%= user.getId() %>">
+                <input type="submit" value="删除">
+            </form>
+        </td>
+    </tr>
+    <% 
+            }
+        }
+    %>
+</tbody>
+
+
                 </table>
             </div>
         </div>
